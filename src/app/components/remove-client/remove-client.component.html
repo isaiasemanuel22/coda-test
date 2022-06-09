@@ -1,0 +1,7 @@
+<div mat-dialog-content>
+    ¿Seguro que desea eliminar a {{ data.item.firstname }}?
+</div>
+<div mat-dialog-actions>
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-button cdkFocusInitial (click)="deleteClient()">Confirmar</button>
+</div>
