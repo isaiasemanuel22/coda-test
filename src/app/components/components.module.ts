@@ -9,38 +9,22 @@ import { MiaTableModule } from '@agencycoda/mia-table';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { RemoveClientComponent } from './remove-client/remove-client.component';
 
 
 
 @NgModule({
   declarations: [
-    AddClientComponent
+    AddClientComponent,
+    RemoveClientComponent
   ],
   imports: [
     CommonModule,
     MiaFormModule,
-    MatDialogModule
+    MatDialogModule,
+    MatButtonModule
   ],
-  providers:[
-    { 
-      provide: MIA_AUTH_PROVIDER, 
-      useValue: {
-        baseUrl: environment.baseUrl
-      }
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MiaAuthInterceptor,
-      multi: true
-    },
-    {
-      provide: MIA_GOOGLE_STORAGE_PROVIDER,
-      useValue: {
-        bucket: environment.cloudStorageBucket
-      }
-    }
-  ]
-  ,
   exports:[
     AddClientComponent
   ]

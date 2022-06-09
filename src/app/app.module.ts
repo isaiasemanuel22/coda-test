@@ -13,6 +13,7 @@ import { MiaFormModule } from '@agencycoda/mia-form';
 import { MiaLoadingModule } from '@agencycoda/mia-loading';
 import { TableComponent } from './views/table/table.component';
 import { ComponentsModule } from './components/components.module';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { ComponentsModule } from './components/components.module';
     MiaTableModule,
     MiaLoadingModule,
     MiaFormModule,
+    MatButtonModule,
     ComponentsModule
   ],
   providers: [

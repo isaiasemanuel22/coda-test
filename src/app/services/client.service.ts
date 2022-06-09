@@ -12,8 +12,8 @@ import { query } from '@angular/animations';
 export class ClientService extends MiaBaseCrudHttpService<Client> {
 
 
-  private listClients:Subject<Client[]> = new Subject<Client[]>();
-  private miaQuery:MiaQuery | null = null;
+  private listClients: Subject<Client[]> = new Subject<Client[]>();
+  private miaQuery: MiaQuery | null = null;
   constructor(
     protected http: HttpClient
   ) {
@@ -21,34 +21,40 @@ export class ClientService extends MiaBaseCrudHttpService<Client> {
     this.basePathUrl = environment.baseUrl + 'client';
   }
 
-  getList(){
-    this.postOb(this.basePathUrl + '/list', this.getQueryInstance().toParams()).subscribe((response)=>{
+  getList() {
+    this.postOb(this.basePathUrl + '/list', this.getQueryInstance().toParams()).subscribe((response) => {
       this.listClients.next(response.data);
     });
   }
 
   create(client: Client) {
-   return this.save(client).then(()=>{
+    return this.save(client).then(() => {
       this.getList();
     });
   }
 
 
-  deleteElement(id:any){
-   return this.delete(this.basePathUrl + '/remove/' + id).then(()=>{
+  deleteElement(id: any) {
+    return this.delete(this.basePathUrl + '/remove/' + id).then(() => {
       this.getList();
     })
   }
 
-  getListClients(){
+  getListClients() {
     this.getList()
     return this.listClients.asObservable();
   }
 
-  getQueryInstance(){
-    if(this.miaQuery == null){
+  getQueryInstance() {
+    if (this.miaQuery == null) {
       this.miaQuery = new MiaQuery();
     }
     return this.miaQuery;
+  }
+
+  update(item: any) {
+    return this.save(item).then(() => {
+      this.getList();
+    })
   }
 }

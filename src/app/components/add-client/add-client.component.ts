@@ -1,6 +1,7 @@
 import { MiaFormComponent, MiaFormModalComponent, MiaFormModalConfig } from '@agencycoda/mia-form';
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ClientService } from '../../services/client.service';
 
 
 
@@ -19,67 +20,46 @@ export class AddClientComponent implements OnInit {
   isShowHeader = true;
 
   errorMessage = '';
-
+  service!: ClientService;
   constructor(
     protected dialogRef: MatDialogRef<MiaFormModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: MiaFormModalConfig
   ) { }
 
   ngOnInit(): void {
+    this.service = this.data.service;
+  }
 
-    this.dialogRef.beforeClosed().subscribe(res => {
-      this.form.submit().subscribe();
+  addClientService(item: any) {
+    this.service.create(item).then(() => {
+      this.dialogRef.close();
+    }).catch(error => {
+      console.error(error);
     });
 
   }
 
-  processWithBaseService(item: any) {
-    this.data.service.create(item);
-    this.dialogRef.close();
-  }
-
-  processWithInternal(item: any) {
-    this.data.nextProcess!.next(item);
-    this.data.resultProcess?.subscribe(result => {
-      if (result) {
-        this.dialogRef.close(result);
-      }
-      this.isSending = false;
-    }, error => {
-      if (error.error && error.error.message) {
-        this.errorMessage = error.error.message;
-      } else if (error.message) {
-        this.errorMessage = error.message;
-      }
-      this.isSending = false;
-    });
-  }
-
-  save(item: any) {
+  save(item: any, create: boolean) {
     if (this.isSending) {
       return;
     }
-
     this.isSending = true;
-    console.log(item)
-    this.processWithBaseService(item);
+    if (create) {
+      this.addClientService(item);
+    } else {
+      this.updateClientService(item);
+    }
+  }
 
+  updateClientService(item: any) {
+    this.service.update(item);
+    this.dialogRef.close();
   }
 
   onClickSave() {
     this.form.submit().subscribe(result => {
-      console.log(result);
-      this.save(result);
+      this.save(result, result.id == 0);
     });
-  }
-
-  setErrorMessage(error: string) {
-    this.errorMessage = error;
-    this.isSending = false;
-  }
-
-  cleanErrors() {
-    this.errorMessage = '';
   }
 
 }

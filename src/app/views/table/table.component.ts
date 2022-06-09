@@ -1,6 +1,6 @@
 import { MiaPagination } from '@agencycoda/mia-core';
 import { Component, OnInit } from '@angular/core';
-import { MiaTableConfig} from '@agencycoda/mia-table';
+import { MiaTableConfig } from '@agencycoda/mia-table';
 import { ClientService } from '../../services/client.service';
 import { Client } from 'src/app/entities/client';
 import { MiaFormModalConfig, MiaFormConfig, MiaField } from '@agencycoda/mia-form';
@@ -8,6 +8,7 @@ import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { AddClientComponent } from '../../components/add-client/add-client.component';
 import { ComponentType } from '@angular/cdk/portal';
+import { RemoveClientComponent } from '../../components/remove-client/remove-client.component';
 
 @Component({
   selector: 'app-table',
@@ -23,7 +24,7 @@ export class TableComponent implements OnInit {
   constructor(
     protected dialog: MatDialog,
     public testService: ClientService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadConfig();
@@ -39,28 +40,30 @@ export class TableComponent implements OnInit {
     this.tableConfig.hasEmptyScreen = true;
     this.tableConfig.emptyScreenTitle = 'No hay elementos en la tabla';
     this.tableConfig.onClick.subscribe(result => {
-      this.switchAction(result.key , result.item);
+      this.switchAction(result.key, result.item);
     });
     this.configColums();
     this.configDataTable();
   }
 
-  configColums(){
+  configColums() {
     this.tableConfig.columns = [
       { key: 'firstname', type: 'string', title: 'Nombre', field_key: 'firstname' },
       { key: 'lastname', type: 'string', title: 'Apellido', field_key: 'lastname' },
       { key: 'email', type: 'string', title: 'Mail', field_key: 'email' },
-      { key: 'more', type: 'more', title: '', extra: {
-        actions: [
-          { icon: 'visibility', title: 'View', key: 'view' },
-          { icon: 'create', title: 'Edit', key: 'edit' },
-          { icon: 'delete', title: 'Delete', key: 'remove' },
-        ]
-      } }
+      {
+        key: 'more', type: 'more', title: '', extra: {
+          actions: [
+            { icon: 'visibility', title: 'View', key: 'view' },
+            { icon: 'create', title: 'Edit', key: 'edit' },
+            { icon: 'delete', title: 'Delete', key: 'remove' },
+          ]
+        }
+      }
     ]
   }
 
-  configDataTable(){
+  configDataTable() {
     this.mockData = {
       current_page: 1,
       first_page_url: '',
@@ -79,36 +82,43 @@ export class TableComponent implements OnInit {
 
   //modal
 
-  addClient(item?:Client) {
+  addClient(item?: Client) {
     let data = new MiaFormModalConfig();
     data.item = item != undefined ? item : new Client();
     data.service = this.testService;
     data.titleNew = 'Create Contact';
     data.titleEdit = 'Edit Contact';
-    data.config = this.configMiaForm();
+    data.config = this.configClientMiaForm();
 
     this.openModal(data, AddClientComponent);
   }
 
-  configMiaForm(){
+  configClientMiaForm() {
     let config = new MiaFormConfig();
     config.hasSubmit = false;
     config.fields = [
-      { key: 'firstname', type: MiaField.TYPE_STRING, label: 'Nombre' },
-      { key: 'lastname', type: MiaField.TYPE_STRING, label: 'Apellido' },
       {
-        key: 'email', type: MiaField.TYPE_EMAIL, label: 'Email', validators:
+        key: 'firstname', type: MiaField.TYPE_STRING, label: 'Nombre', validators:
           [Validators.required]
+      },
+      {
+        key: 'lastname', type: MiaField.TYPE_STRING, label: 'Apellido', validators:
+          [Validators.required]
+      },
+      {
+        key: 'email', type: MiaField.TYPE_STRING, label: 'Email', validators:
+          [Validators.required , Validators.email]
       },
     ];
     config.errorMessages = [
-      { key: 'required', message: 'The "%label%" is required.' }
+      { key: 'required', message: 'El "%label%" es obligatorio.' },
+      { key:'email' , message:'Debe ser un correo real'}
     ];
 
     return config;
   }
 
-  openModal(data:MiaFormModalConfig , component: ComponentType<unknown>){
+  openModal(data: MiaFormModalConfig, component: ComponentType<unknown>) {
     return this.dialog.open(component, {
       width: '520px',
       panelClass: 'modal-full-width-mobile',
@@ -123,23 +133,23 @@ export class TableComponent implements OnInit {
     });
   }
 
-  switchAction(key:string , item:Client){
-   switch(key){
-     case 'remove' :{
-      this.removeItemService(item);
-      break;
-     }
-     case 'edit':{
-       this.addClient(item);
-     }
-   }
+  switchAction(key: string, item: Client) {
+    switch (key) {
+      case 'remove': {
+        this.removeItem(item);
+        break;
+      }
+      case 'edit': {
+        this.addClient(item);
+      }
+    }
   }
 
-  removeItemService(item:Client){
-    this.testService.deleteElement(item.id).then(()=>{
-      console.log('se elimino con exito');
-    }).catch((error)=> {
-      console.log('no se pudo eliminar');
-    })
+  removeItem(item:Client){
+    let data = new MiaFormModalConfig();
+    data.item = item;
+    data.service = this.testService;
+    this.openModal(data, RemoveClientComponent);
   }
+
 }

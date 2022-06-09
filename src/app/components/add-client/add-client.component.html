@@ -1,11 +1,9 @@
 <h5 *ngIf="data.item.id == 0 && isShowHeader" mat-dialog-title class="mat-dialog-title">{{ data.titleNew }}</h5>
 <h5 *ngIf="data.item.id > 0 && isShowHeader" mat-dialog-title class="mat-dialog-title">{{ data.titleEdit }}</h5>
 
-<mat-dialog-content class="form-modal">
-  <div class="content">
+<mat-dialog-content>
+  <div >
     <mia-form #form [config]="data.config" [item]="data.item"></mia-form>
-
-    <div *ngIf="errorMessage != ''">{{ errorMessage }}</div>
   </div>
 </mat-dialog-content>
 
